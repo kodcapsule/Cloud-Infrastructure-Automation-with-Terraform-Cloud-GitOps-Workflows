@@ -20,7 +20,7 @@ variable "aws_region" {
 
 
 
-variable "ami_id" {
-  description = "Id for AMI"
-  type        = string
-}
+# variable "ami_id" {
+#   description = "Id for AMI"
+#   type        = string
+# }
