@@ -78,17 +78,60 @@ Before you begin, ensure you have the following:
 
 ---
 
-### 2. Configure AWS Credentials
 
-In your Terraform Cloud workspace, navigate to **Settings → Variables** and add the following as **Environment Variables**. Mark them as **Sensitive**.
+### 2. Configure Dynamic AWS Credentials (OIDC)
 
-| Variable | Value |
+Instead of storing long-lived AWS access keys, this tutorial uses **Terraform Cloud Dynamic Provider Credentials** — short-lived tokens issued via OpenID Connect (OIDC). This is the recommended, more secure approach.
+
+#### Step A — Create an AWS IAM OIDC Identity Provider
+
+In the **AWS Console → IAM → Identity Providers**, create a new OIDC provider:
+
+| Field | Value |
 |---|---|
-| `AWS_ACCESS_KEY_ID` | Your IAM access key |
-| `AWS_SECRET_ACCESS_KEY` | Your IAM secret key |
-| `AWS_DEFAULT_REGION` | e.g., `us-east-1` |
+| **Provider URL** | `https://app.terraform.io` |
+| **Audience** | `aws.workload.identity` |
 
-> ⚠️ **Never commit AWS credentials to your repository.**
+#### Step B — Create an IAM Role for Terraform Cloud
+
+Create a new IAM role with the following **Trust Policy**, replacing the placeholders with your values:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::<YOUR_AWS_ACCOUNT_ID>:oidc-provider/app.terraform.io"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "app.terraform.io:aud": "aws.workload.identity"
+        },
+        "StringLike": {
+          "app.terraform.io:sub": "organization:<YOUR_TFC_ORG>:project:*:workspace:<YOUR_WORKSPACE_NAME>:run_phase:*"
+        }
+      }
+    }
+  ]
+}
+```
+
+Attach the **`AmazonEC2FullAccess`** policy (or a least-privilege custom policy) to this role and note the **Role ARN**.
+
+#### Step C — Add Variables to Terraform Cloud
+
+In your workspace, go to **Settings → Variables** and add the following as **Environment Variables**:
+
+| Variable | Value | Sensitive |
+|---|---|---|
+| `TFC_AWS_PROVIDER_AUTH` | `true` | No |
+| `TFC_AWS_RUN_ROLE_ARN` | `arn:aws:iam::<account-id>:role/<role-name>` | No |
+
+> ✅ **No static keys required.** Terraform Cloud will automatically assume the IAM role using short-lived OIDC tokens for every run.
+
 
 ---
 
