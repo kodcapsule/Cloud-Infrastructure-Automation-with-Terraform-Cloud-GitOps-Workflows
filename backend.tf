@@ -1,9 +1,9 @@
 terraform {
   cloud {
-    organization = "your-org-name"
+    organization = "DevOps2026"
 
     workspaces {
-      name = "aws-ec2-prod"
+      name = "Cloud-Infrastructure"
     }
   }
 }
