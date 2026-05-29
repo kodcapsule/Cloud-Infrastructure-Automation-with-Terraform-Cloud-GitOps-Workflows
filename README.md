@@ -1,6 +1,6 @@
 # 🚀 Deploying AWS EC2 via Terraform Cloud
 
-A step-by-step tutorial for provisioning AWS EC2 instances using **Terraform Cloud** as the remote backend — covering workspace setup, credential management, and automated deployments via version control.
+This is a  step-by-step guide for provisioning AWS resources using **Terraform Cloud**. This tutorial covers organizations and  workspace setup, credential management, and automated deployments via version control.
 
 ---
 
@@ -96,14 +96,34 @@ In your Terraform Cloud workspace, navigate to **Settings → Variables** and ad
 
 **`main.tf`**
 ```hcl
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
+data "aws_ami" "amazon_linux_2023" {
+  most_recent = true
+  owners      = ["amazon"]
 
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*-x86_64"]
+  }
+}
+
+
+
+
+resource "aws_instance" "web-server" {
+  ami           = data.aws_ami.amazon_linux_2023.id
+  instance_type = var.instance_type
+
+  tags = {
+    Name = "Terraform-Lab-Instance-${var.environment}"
+  }
+}
+
+
+```
+
+**`backend.tf`**
+```hcl
+terraform {
   cloud {
     organization = "your-org-name"
 
@@ -112,41 +132,52 @@ terraform {
     }
   }
 }
+```
+**`provider.tf`**
+
+```hcl
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+  
+}
 
 provider "aws" {
   region = var.aws_region
-}
-
-resource "aws_instance" "web" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-
-  tags = {
-    Name        = "terraform-cloud-ec2"
-    Environment = "tutorial"
-    ManagedBy   = "terraform"
-  }
 }
 ```
 
 **`variables.tf`**
 ```hcl
+variable "instance_type" {
+    description = "The type of instance to create"
+    type        = string
+    default     = "t2.micro"
+  
+}
+
+variable "environment" {
+  type = string
+  default = "dev"
+  description = "The environment for the instance"
+}
+
+
 variable "aws_region" {
-  description = "AWS region to deploy into"
+  description = "AWS region to deploy resources"
   type        = string
   default     = "us-east-1"
 }
 
-variable "ami_id" {
-  description = "AMI ID for the EC2 instance (region-specific)"
-  type        = string
-  default     = "ami-0c02fb55956c7d316" # Amazon Linux 2 — us-east-1
-}
 
-variable "instance_type" {
-  description = "EC2 instance type"
+
+variable "ami_id" {
+  description = "Id for AMI"
   type        = string
-  default     = "t2.micro"
 }
 ```
 
