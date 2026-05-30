@@ -7,7 +7,7 @@ variable "instance_type" {
 
 variable "environment" {
   type = string
-  default = "dev"
+  default = "dev-teterraform"
   description = "The environment for the instance"
 }
 
