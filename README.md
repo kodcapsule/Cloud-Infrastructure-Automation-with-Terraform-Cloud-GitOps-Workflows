@@ -151,8 +151,6 @@ data "aws_ami" "amazon_linux_2023" {
 }
 
 
-
-
 resource "aws_instance" "web-server" {
   ami           = data.aws_ami.amazon_linux_2023.id
   instance_type = var.instance_type
