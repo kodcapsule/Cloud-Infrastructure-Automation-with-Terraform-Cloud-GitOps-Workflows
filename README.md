@@ -129,7 +129,7 @@ In your workspace, go to **Settings → Variables** and add the following as **E
 |---|---|---|
 | `TFC_AWS_PROVIDER_AUTH` | `true` | No |
 | `TFC_AWS_RUN_ROLE_ARN` | `arn:aws:iam::<account-id>:role/<role-name>` | No |
-| ` TFC_AWS_WORKLOAD_IDENTITY_AUDIENCE ` | `aws.workload.identity` | No |
+| `TFC_AWS_WORKLOAD_IDENTITY_AUDIENCE` | `aws.workload.identity` | No |
 
 > ✅ **No static keys required.** Terraform Cloud will automatically assume the IAM role using short-lived OIDC tokens for every run !.
 
