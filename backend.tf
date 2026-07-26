@@ -3,7 +3,7 @@ terraform {
     organization = "JAMCS"
 
     workspaces {
-      name = "SweetDevOps"
+      name = "Sweet-Dev-Wkps"
     }
   }
 } 
