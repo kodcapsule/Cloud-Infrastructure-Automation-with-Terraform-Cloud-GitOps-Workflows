@@ -1,3 +1,3 @@
 instance_type = "t2.micro"
-environment = "Production"
+environment = "Development"
 aws_region = "us-east-1"
