@@ -16,7 +16,7 @@ resource "aws_instance" "web-server" {
   instance_type = var.instance_type
 
   tags = {
-    Name = "Terraform-Lab-Instance-${var.environment}"
+    Name = "Web-Server-${var.environment}"
   }
 }
 

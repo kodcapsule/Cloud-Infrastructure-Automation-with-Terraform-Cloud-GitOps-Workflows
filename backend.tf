@@ -1,9 +1,9 @@
 terraform {
   cloud {
-    organization = "DevOps2026"
+    organization = "JAMCS"
 
     workspaces {
-      name = "Cloud-Infrastructure"
+      name = "SweetDevOps"
     }
   }
 } 
