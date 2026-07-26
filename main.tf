@@ -16,7 +16,7 @@ resource "aws_instance" "web-server" {
   instance_type = var.instance_type
 
   tags = {
-    Name = "DevOps-Web-Server-1-${var.environment}"
+    Name = "DevOps-Web-Server-${var.environment}"
   }
 }
 
